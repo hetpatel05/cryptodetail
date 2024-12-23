@@ -5,23 +5,43 @@ import { useQuery } from "react-query";
 import currencyStore from '../../state/store';
 import { useNavigate } from "react-router-dom";
 import PageLoader from "../PageLoader/PageLoader";
+import InfiniteScroll from "react-infinite-scroll-component";
+import { useEffect } from "react";
 function CoinTable() {
-
+    const [coins, setCoins] = useState([]);
     const { currency } = currencyStore();
-
+const [hasmore,sethasmore]=useState(true);
     const navigate = useNavigate();
 
-    const [page, setPage] = useState(1);
+    const [page,setpage] = useState(1);
     const { data, isLoading, isError, error} = useQuery(['coins', page, currency], () => fetchCoinData(page, currency), {
         // retry: 2,
         // retryDelay: 1000,
+        keepPreviousData:true,
         cacheTime: 1000 * 60 * 2,
         staleTime: 1000 * 60 * 2,
     });
+    useEffect(() => {
+        if (data) {
+            setCoins(prevCoins => [...prevCoins, ...data]);
+            if (data.length==0) {
+                sethasmore(false); // Stop fetching if no more data is available
+            }
+        }
+    }, [data]);
 
 
     function handleCoinRedirect(id) {
         navigate(`/details/${id}`);
+    }
+    function fetchmoredata(){
+
+
+        
+        setTimeout(()=>{
+         setpage(currentPage => currentPage + 1)
+        },1000)
+
     }
 
     if(isError) {
@@ -50,9 +70,23 @@ function CoinTable() {
                 </div>
             </div>
 
+            <InfiniteScroll
+              
+            dataLength={coins.length}
+            next={fetchmoredata}
+            hasMore={hasmore}
+            loader={<p>loading</p>}
+            endMessage={
+                <p style={{ textAlign: 'center' }}>
+                  <b>Yay! You have seen it all</b>
+                </p>
+              }
+            
+            >
+
             <div className="flex flex-col w-[80vw] mx-auto">
                 {isLoading && <div>Loading...</div>}
-                {data && data.map((coin) => {
+                {coins && coins.map((coin) => {
                     return (
                         <div onClick={() => handleCoinRedirect(coin.id)} key={coin.id} className="w-full bg-transparent text-white flex py-4 px-2 font-semibold items-center justify-between cursor-pointer">
                             <div className="flex items-center justify-start gap-3 basis-[35%]">
@@ -82,22 +116,10 @@ function CoinTable() {
                     );
                 })}
             </div>
+           </InfiniteScroll>
 
-            <div className="flex gap-4 justify-center items-center">
-                <button
-                    disabled={page === 1}
-                    onClick={() => setPage(page-1)} 
-                    className="btn btn-primary btn-wide text-white text-2xl"
-                >
-                    Prev
-                </button>
-                <button 
-                    onClick={() => setPage(page+1)} 
-                    className="btn btn-secondary btn-wide text-white text-2xl"
-                >
-                    Next
-                </button>
-            </div>
+
+         
         </div>
     )
 }

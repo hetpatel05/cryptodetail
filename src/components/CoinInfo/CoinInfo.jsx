@@ -9,21 +9,22 @@ Chart.register(CategoryScale);
 function CoinInfo({ historicData, setDays, setCoinInterval, days, currency }) {
 
     function handleDayChange(e) {
-        console.log(e.target.options[e.target.selectedIndex].value);
-        const daysSelected = e.target.options[e.target.selectedIndex].value;
-        if(daysSelected == 1) {
-            setCoinInterval?.('');
+        console.log(e.target.value);
+        const daysSelected = e.target.value;
+        if (daysSelected == 1) {
+            setCoinInterval('');
         } else {
-            setCoinInterval?.('daily');
+            setCoinInterval('daily');
         }
-        setDays?.(e.target.options[e.target.selectedIndex].value);
+        setDays(daysSelected);
     }
-
     
 
     if(!historicData) {
         return <Alert message="No data available" type="warning" />
     }
+
+    
 
     return (
         <div
@@ -37,7 +38,7 @@ function CoinInfo({ historicData, setDays, setCoinInterval, days, currency }) {
                     labels: historicData.prices.map(coinPrice => {
                         let date = new Date(coinPrice[0]); // CONVERTING UNIX TIMESTAMP TO DATE
                         let time = date?.getHours() > 12 ? `${date?.getHours() - 12}:${date?.getMinutes()} PM` : `${date?.getHours()}:${date.getMinutes()} AM`;
-                        return days === 1 ? time : date.toLocaleDateString();
+                        return days == 1 ? time : date.toLocaleDateString();
                     }),
                     datasets: [
                         {
@@ -49,7 +50,7 @@ function CoinInfo({ historicData, setDays, setCoinInterval, days, currency }) {
 
                 options={{
                     responsive: true,
-                    maintainAspectRatio: false,
+                   maintainAspectRatio:false,
                     elements: {
                         point: {
                             radius: 0
@@ -64,13 +65,13 @@ function CoinInfo({ historicData, setDays, setCoinInterval, days, currency }) {
             
 
             <div className="flex justify-center mt-5 w-full">
-                <select className="select select-primary w-full max-w-xs" onChange={handleDayChange}>
-                    {chartDays.map((day, index) => {
-                        return (
-                            <option selected={days == day.value} key={index} value={day.value}> {day.label}</option>
-                        )
-                    })}
-                </select>
+            <select className="select select-primary w-full max-w-xs" value={days} onChange={handleDayChange}>
+    {chartDays.map((day) => (
+        <option key={day.value} value={day.value}>
+            {day.label}
+        </option>
+    ))}
+</select>
                 
 
             </div>

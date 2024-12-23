@@ -2,11 +2,18 @@
 // import { CurrencyContext } from "../../context/CurrencyContext";
 import { useNavigate } from 'react-router-dom';
 import currencyStore from  '../../state/store';
+import { useState } from 'react';
+import SearchBar from '../SearchBar/SearchBar';
 function Navbar() {
 
     const { setCurrency } = currencyStore();
     const navigate = useNavigate();
+const [SearchVisible,setSearchVisible]=useState(false)
 
+
+function  setsearchvisible(){
+    setSearchVisible(true)
+}
     function goToHome() {
         navigate('/');
     }
@@ -40,8 +47,12 @@ function Navbar() {
             <div onClick={goToHome} className="navbar-center">
                 <a className="btn btn-ghost text-xl">Crpto Tracker</a>
             </div>
-            <div className="navbar-end">
-                <button className="btn btn-ghost btn-circle">
+            <div className="navbar-end flex items-center">
+                
+
+               <SearchBar searchvisible={SearchVisible}/>
+               
+                <button onClick= {setsearchvisible}className="btn btn-ghost btn-circle">
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
                     className="h-5 w-5"

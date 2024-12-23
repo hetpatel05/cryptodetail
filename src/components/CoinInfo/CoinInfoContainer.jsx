@@ -14,6 +14,7 @@ function CoinInfoContainer({ coinId }) {
     if(isError) {
         return <Alert message="Error fetching data" type="error" />
     }
+    console.log(historicData)
 
     return (
         <>
